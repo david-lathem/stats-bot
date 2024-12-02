@@ -165,6 +165,8 @@ module.exports = async (oldPresence, newPresence) => {
 
     const { guild, userId, activities, client } = newPresence;
 
+    if (guild.id !== process.env.GUILD_ID) return;
+
     let str = "";
     let image, thread, doc, isNew;
 

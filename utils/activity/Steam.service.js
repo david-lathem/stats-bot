@@ -107,7 +107,7 @@ async function getSteamGameDetails(appId) {
 
 function generateEmojisData(obj) {
   return Object.entries(obj).reduce((acc, [emoji, id]) => {
-    acc += `> ### ${emoji} \`${id}\`\n`;
+    acc += `### ${emoji} \`${id}\`\n`;
     return acc;
   }, "\n");
 }
