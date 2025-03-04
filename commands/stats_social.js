@@ -52,7 +52,6 @@ module.exports = {
     try {
       const { options, user, locale, guild } = interaction;
 
-      console.log({ locale });
       const social = options.getString("social");
       const privacy = options.getString("privacy");
       const text = options.getString("text");

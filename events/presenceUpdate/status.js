@@ -185,7 +185,6 @@ module.exports = async (oldPresence, newPresence) => {
     for (const activity of activities) {
       const { type, state, details, assets, name } = activity;
 
-      console.log(ActivityType[type], " ", name);
 
       if (type !== ActivityType.Playing) continue;
 
@@ -197,8 +196,7 @@ module.exports = async (oldPresence, newPresence) => {
 
       if (isSameActivity) continue;
 
-      console.log("Not a same activity");
-
+s
       const userActivities = userActivityMap.get(userId);
       const newActivity = { name, lastPlayed: Date.now() };
       // console.log(userActivities);

@@ -1,4 +1,4 @@
-const { Client, IntentsBitField, Partials, Collection } = require("discord.js");
+const { Client, IntentsBitField, Partials, Collection, GatewayDispatchEvents } = require("discord.js");
 const WOK = require("wokcommands");
 const mongoose = require("mongoose");
 require("dotenv").config({ path: "./.env" });
@@ -24,6 +24,13 @@ const client = new Client({
   partials: [Partials.Channel, Partials.User],
 });
 
+client.on('debug', (m)=> console.log(`[DEBUG (client) ]`, m))
+
+
+client.ws.on(GatewayDispatchEvents.Ready, (d, shardId)=> console.log(`Shard ${shardId} is ready!`, d ))
+
+client.ws.on(GatewayDispatchEvents.Resumed, (shardId)=> console.log(`Shard ${shardId} resumed!` ))
+
 client.on("ready", async () => {
   console.log(`${client.user.username} is running`);
   await mongoose.connect(MONGO_URI);
@@ -36,12 +43,10 @@ client.on("ready", async () => {
 
     let messages = new Collection();
 
-    console.log("looping over channel");
 
     let lastMessageId;
 
     do {
-      console.log("doing");
 
       try {
         messages = await ch.messages.fetch({

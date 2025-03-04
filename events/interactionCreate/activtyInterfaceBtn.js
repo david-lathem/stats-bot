@@ -373,7 +373,6 @@ module.exports = async (interaction) => {
 
         const userConfig = globalConfig[interaction.user.id];
 
-        console.log(userConfig);
 
         const threadName = userConfig.title;
 
@@ -441,7 +440,6 @@ module.exports = async (interaction) => {
         const { items } = await res.json();
         // console.log(emojisData);
 
-        console.log(items);
 
         const threadContent = `## ${userConfig.description}\n\n* [**${
           userConfig.name
@@ -497,7 +495,6 @@ module.exports = async (interaction) => {
           components: [],
         });
       } else if (interaction.customId === "select_database_game") {
-        console.log("database games selected");
 
         if (interaction.values[0] === "search") {
           const modal = new ModalBuilder()

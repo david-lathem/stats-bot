@@ -59,7 +59,6 @@ module.exports = {
         ephemeral: true,
       });
 
-      console.log(m.components[0].components);
     } catch (error) {
       console.error(error);
       await interaction.reply({

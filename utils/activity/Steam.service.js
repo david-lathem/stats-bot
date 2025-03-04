@@ -100,7 +100,6 @@ async function getSteamGameDetails(appId) {
   );
   const data = await response.json();
 
-  console.log(data);
 
   return data[appId]?.data;
 }
@@ -124,14 +123,11 @@ async function upsertUserGame(userId, newGameData) {
       if (index === -1) {
         userGame.gameData.push(newGameData);
         await userGame.save();
-        console.log(`Added new game data for userId: ${userId}`);
       } else {
         userGame.gameData[index].timesUsed++;
         await userGame.save();
 
-        console.log(
-          `AppId: ${newGameData.appId} already exists for userId: ${userId}`
-        );
+        
       }
     } else {
       userGame = new UserGame({
@@ -139,9 +135,7 @@ async function upsertUserGame(userId, newGameData) {
         gameData: [newGameData],
       });
       await userGame.save();
-      console.log(
-        `Created new document and added game data for userId: ${userId}`
-      );
+      
     }
 
     return userGame;

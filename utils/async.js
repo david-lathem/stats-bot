@@ -10,7 +10,6 @@ function setupGameData(interaction, thread, threadName) {
   const text = options.getString("text") ?? "";
   const attachment = options.getAttachment("media");
 
-  console.log(attachment);
 
   // Get the current date and time
   const now = new Date();
