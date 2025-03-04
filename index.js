@@ -42,8 +42,7 @@ client.ws.on(GatewayDispatchEvents.Resumed, (shardId)=> console.log(`Shard ${sha
 
 client.on("ready", async () => {
   console.log(`${client.user.username} is running`);
-  // await mongoose.connect(MONGO_URI);
-  return
+  await mongoose.connect(MONGO_URI);
 
   const chIdArr = [PC_IDS_CHANNEL_ID, CONSOLE_USERNAME_CHANNEL_ID];
 
