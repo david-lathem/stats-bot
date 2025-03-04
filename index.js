@@ -1,4 +1,4 @@
-const { Client, IntentsBitField, Partials, Collection, GatewayDispatchEvents } = require("discord.js");
+const { Client, IntentsBitField, Partials, Collection, GatewayDispatchEvents, Events } = require("discord.js");
 const WOK = require("wokcommands");
 const mongoose = require("mongoose");
 require("dotenv").config({ path: "./.env" });
@@ -6,6 +6,7 @@ require("dotenv").config({ path: "./.env" });
 const path = require("path");
 const UserGame = require("./models/game_data");
 const { extractUsernames } = require("./utils/activity/regex");
+const { WebSocketShardEvents } = require("discord.js");
 
 const { DefaultCommands } = WOK;
 const { TOKEN, MONGO_URI, CONSOLE_USERNAME_CHANNEL_ID, PC_IDS_CHANNEL_ID } =
@@ -25,15 +26,24 @@ const client = new Client({
 });
 
 client.on('debug', (m)=> console.log(`[DEBUG (client) ]`, m))
+client.on(Events.ShardReady,(shardId, d)=> console.log(`[CLIENT (shard)] Shard ${shardId} is ready!`))
+
+client.on(Events.ShardDisconnect,(s,shardId)=> console.log(`[CLIENT (shard)] Shard ${shardId} is disconnected!`, d ))
+
+client.on(Events.ShardReconnecting,(shardId)=> console.log(`[CLIENT (shard)] Shard ${shardId} is reconnecting!`, d ))
+client.on(Events.ShardResume,(shardId)=> console.log(`[CLIENT (shard)] Shard ${shardId} is resuming!`, d ))
+client.on(Events.ShardError,(shardId, e)=> console.log(`[CLIENT (shard)] Shard ${shardId} got error!`, e ))
 
 
+client.ws.on(WebSocketShardEvents.Ready, (d, shardId)=> console.log(`Shard ${shardId} is ready!`, d ))
 client.ws.on(GatewayDispatchEvents.Ready, (d, shardId)=> console.log(`Shard ${shardId} is ready!`, d ))
 
 client.ws.on(GatewayDispatchEvents.Resumed, (shardId)=> console.log(`Shard ${shardId} resumed!` ))
 
 client.on("ready", async () => {
   console.log(`${client.user.username} is running`);
-  await mongoose.connect(MONGO_URI);
+  // await mongoose.connect(MONGO_URI);
+  return
 
   const chIdArr = [PC_IDS_CHANNEL_ID, CONSOLE_USERNAME_CHANNEL_ID];
 
