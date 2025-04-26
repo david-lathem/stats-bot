@@ -23,6 +23,8 @@ const gameThreadSchema = new mongoose.Schema(
       },
     ],
     totalPlays: { type: Number, default: 0 },
+    totalMessagesSent : { type: Number, default: 0},
+    allTimePlays: [{ type: Date }], 
     lastThreshold: Date,
   },
   { timestamps: true }

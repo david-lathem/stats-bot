@@ -2,11 +2,12 @@ const { Client, IntentsBitField, Partials, Collection, GatewayDispatchEvents, Ev
 const WOK = require("wokcommands");
 const mongoose = require("mongoose");
 require("dotenv").config({ path: "./.env" });
-
+const cron = require('node-cron');
 const path = require("path");
 const UserGame = require("./models/game_data");
 const { extractUsernames } = require("./utils/activity/regex");
 const { WebSocketShardEvents } = require("discord.js");
+const gameThread = require("./models/gameThread");
 
 const { DefaultCommands } = WOK;
 const { TOKEN, MONGO_URI, CONSOLE_USERNAME_CHANNEL_ID, PC_IDS_CHANNEL_ID } =
@@ -43,6 +44,49 @@ client.ws.on(GatewayDispatchEvents.Resumed, (shardId)=> console.log(`Shard ${sha
 client.on("ready", async () => {
   console.log(`${client.user.username} is running`);
   await mongoose.connect(MONGO_URI);
+
+  cron.schedule('*/15 * * * *', async () => {
+    try {
+      const channel = await client.channels.fetch(process.env.THREADS_CHANNEL_ID);
+      const allThreads = await channel.threads.fetchActive();
+  
+      const currentThreadCount = allThreads.threads.size;
+      console.log(`Current thread count: ${currentThreadCount}`);
+      if (currentThreadCount <= 5) return console.log('Thread count is less than or equal to 95, no action needed.');
+  
+      const threadsToRemove = currentThreadCount - 5;
+  
+      console.log(`Threads to remove: ${threadsToRemove}`);
+  
+      // Get threads from DB and sort by the oldest date in allTimePlays
+      const threads = await gameThread
+        .find({})
+        .sort({ 'allTimePlays.0': 1 }) // Sort by the oldest date in allTimePlays (ascending)
+        .limit(threadsToRemove);
+  
+      // Log threads that will be deleted
+      threads.forEach((doc, index) => {
+        console.log(`${index + 1}. ${doc.gameName} | Oldest Date in allTimePlays: ${doc.allTimePlays[0]}`);
+      });
+  
+      // Iterate over the threads to delete
+      for (const doc of threads) {
+        try {
+          const thread = await channel.threads.fetch(doc.threadId).catch(() => null);
+          if (thread) {
+            await thread.delete("Thread cleanup due to inactivity (oldest play date)");
+            console.log(`Deleted thread: ${doc.gameName} | Oldest Date in allTimePlays: ${doc.allTimePlays[0]}`);
+          }
+  
+          await gameThread.deleteOne({ _id: doc._id }); // Delete from the DB
+        } catch (err) {
+          console.log(`Failed to delete thread/doc for ${doc.gameName}:`, err.message);
+        }
+      }
+    } catch (err) {
+      console.error('Cron job error:', err);
+    }
+  });
 
   const chIdArr = [PC_IDS_CHANNEL_ID, CONSOLE_USERNAME_CHANNEL_ID];
 

@@ -195,8 +195,6 @@ module.exports = async (oldPresence, newPresence) => {
       );
 
       if (isSameActivity) continue;
-
-s
       const userActivities = userActivityMap.get(userId);
       const newActivity = { name, lastPlayed: Date.now() };
       // console.log(userActivities);
@@ -208,11 +206,11 @@ s
         if (i !== -1) {
           const oldActivity = userActivities[i];
           userActivities[i] = newActivity;
-          if (oldActivity.lastPlayed + 1000 * 60 * 10 > Date.now()) {
+          if (oldActivity.lastPlayed + 1000 * 60 * 2 > Date.now()) {
             // console.log("repeated");
-
+        
             continue;
-          }
+        }        
         }
       }
 
@@ -228,6 +226,8 @@ s
         } else {
           doc.userPlays.push({ userId, plays: 1 }); // Add a new user play entry
         }
+
+        doc.allTimePlays.push(new Date());
 
         if (
           doc.lastThreshold.getTime() + 1000 * 60 * 60 * 24 * 3 <
@@ -310,6 +310,9 @@ s
     });
 
     await thread.send({ embeds: [threadEmbed] });
+
+    doc.totalMessagesSent += 1;
+    await doc.save();
   } catch (error) {
     console.log(error);
   }
