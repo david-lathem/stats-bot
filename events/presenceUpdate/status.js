@@ -247,6 +247,8 @@ module.exports = async (oldPresence, newPresence) => {
           threadId: thread.id,
           userPlays: [{ userId, plays: 1 }],
           totalPlays: 1,
+          allTimePlays : [new Date()],
+          
           lastThreshold: new Date(),
         });
       }

@@ -52,9 +52,9 @@ client.on("ready", async () => {
   
       const currentThreadCount = allThreads.threads.size;
       console.log(`Current thread count: ${currentThreadCount}`);
-      if (currentThreadCount <= 5) return console.log('Thread count is less than or equal to 95, no action needed.');
+      if (currentThreadCount <= 950) return console.log('Thread count is less than or equal to 95, no action needed.');
   
-      const threadsToRemove = currentThreadCount - 5;
+      const threadsToRemove = currentThreadCount - 950;
   
       console.log(`Threads to remove: ${threadsToRemove}`);
   
